@@ -162,6 +162,10 @@ function process_account_form($TYPE,$A,$U="",$T="",$S="",$E="",$H="",$P="",$C=""
 		$error = __("The email address is invalid.");
 	}
 
+	if (!$error && !empty($HP) && !valid_homepage($HP)) {
+		$error = __("The home page is invalid, please specify the full HTTP(s) URL.");
+	}
+
 	if (!$error && $K != '' && !valid_pgp_fingerprint($K)) {
 		$error = __("The PGP key fingerprint is invalid.");
 	}
@@ -924,7 +928,7 @@ function user_delete($id) {
 	$fields_set_null = array(
 		array("PackageBases", "SubmitterUID"),
 		array("PackageBases", "MaintainerUID"),
-		array("PackageBases", "SubmitterUID"),
+		array("PackageBases", "PackagerUID"),
 		array("PackageComments", "UsersID"),
 		array("PackageComments", "DelUsersID"),
 		array("PackageRequests", "UsersID"),

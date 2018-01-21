@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import os
 import shlex
@@ -53,7 +53,6 @@ def main():
     env_vars = {
         'AUR_USER': user,
         'AUR_PRIVILEGED': '1' if account_type > 1 else '0',
-        'AUR_OVERWRITE' : os.environ.get('AUR_OVERWRITE', '0') if account_type > 1 else '0',
     }
     key = keytype + ' ' + keytext
 

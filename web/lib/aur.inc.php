@@ -4,6 +4,7 @@ header('Content-Type: text/html; charset=utf-8');
 header('Cache-Control: no-cache, must-revalidate');
 header('Expires: Tue, 11 Oct 1988 22:00:00 GMT'); // quite a special day
 header('Pragma: no-cache');
+header('X-Frame-Options: DENY');
 
 date_default_timezone_set('UTC');
 
@@ -143,6 +144,26 @@ function valid_email($addy) {
 	// check dns for mx, a, aaaa records
 	list($local, $domain) = explode('@', $addy);
 	if (!(checkdnsrr($domain, 'MX') || checkdnsrr($domain, 'A') || checkdnsrr($domain, 'AAAA'))) {
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Verify that a given URL is valid and uses the HTTP(s) protocol
+ *
+ * @param string $url URL of the home page to be validated
+ *
+ * @return bool True if URL passes validity checks, false otherwise
+ */
+function valid_homepage($url) {
+	if (filter_var($url, FILTER_VALIDATE_URL) === false) {
+		return false;
+	}
+
+	$url_components = parse_url($url);
+	if (!in_array($url_components['scheme'], array('http', 'https'))) {
 		return false;
 	}
 

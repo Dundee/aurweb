@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import re
 import pygit2
@@ -24,6 +24,20 @@ class LinkifyPreprocessor(markdown.preprocessors.Preprocessor):
 class LinkifyExtension(markdown.extensions.Extension):
     def extendMarkdown(self, md, md_globals):
         md.preprocessors.add('linkify', LinkifyPreprocessor(md), '_end')
+
+
+class FlysprayLinksPreprocessor(markdown.preprocessors.Preprocessor):
+    _fsre = re.compile(r'\b(FS#(\d+))\b')
+    _sub = r'[\1](https://bugs.archlinux.org/task/\2)'
+
+    def run(self, lines):
+        return [self._fsre.sub(self._sub, line) for line in lines]
+
+
+class FlysprayLinksExtension(markdown.extensions.Extension):
+    def extendMarkdown(self, md, md_globals):
+        preprocessor = FlysprayLinksPreprocessor(md)
+        md.preprocessors.add('flyspray-links', preprocessor, '_end')
 
 
 class GitCommitsPreprocessor(markdown.preprocessors.Preprocessor):
@@ -102,6 +116,7 @@ def main():
     text, pkgbase = get_comment(conn, commentid)
     html = markdown.markdown(text, extensions=['fenced_code',
                                                LinkifyExtension(),
+                                               FlysprayLinksExtension(),
                                                GitCommitsExtension(pkgbase),
                                                HeadingExtension()])
     allowed_tags = bleach.sanitizer.ALLOWED_TAGS + \
